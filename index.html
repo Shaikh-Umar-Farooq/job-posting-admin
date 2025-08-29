@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Information Extractor</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Job Information Extractor</h1>
+            <p>Extract job details from messages using AI and store in database</p>
+        </div>
+        
+        <div class="content">
+            <!-- Status Section -->
+            <div class="config-section">
+                <h3>🔧 Configuration Status</h3>
+                <div id="configStatus">
+                    <div class="result-item">
+                        <div class="result-label">API Status:</div>
+                        <div class="result-value" id="apiStatus">Checking configuration...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input Section -->
+            <div class="message-section">
+                <h3>📝 Job Message</h3>
+                <textarea id="messageInput" placeholder="Paste your job message here...
+
+Example:
+Associate Software Engineer at Cotiviti 🚀                                                  
+Location: Remote    
+Batch: 2025/2024                     
+Apply here: https://globalcareers-cotiviti.icims.com/jobs/16396/associate-software-engineer/job
+For more off campus hiring updates, you can also join our communities 
+Telegram Community: https://t.me/vishalkumar_linkedin
+WhatsApp Community: https://whatsapp.com/channel/0029VaHlzBTKgsNobcviOA36
+Connect with me: https://www.instagram.com/vishal.onscreen/profilecard/?igsh=MWF1enVyeTRoanV4bw==
+Book 1:1: topmate.io/vishalkumar_28
+Regards,
+Vishal Kumar"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" id="extractBtn" onclick="extractJobInfo()">
+                    🔍 Extract Information
+                </button>
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Processing...</span>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results" id="resultsSection">
+                <h3>📊 Extracted Information</h3>
+                <div id="extractedData">
+                    <!-- Results will be populated here -->
+                </div>
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn insert-btn" id="insertBtn" onclick="insertToDatabase()">
+                        💾 Insert to Database
+                    </button>
+                </div>
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+<script src="index.js"></script>
+
+</body>
+</html>
