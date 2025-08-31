@@ -4,9 +4,9 @@
   "description": "Job Information Extractor - Extract job details from messages using AI and store in database",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "build": "echo 'Static files ready for deployment'",
+    "start": "node api.js && node server.js",
+    "dev": "node api.js && nodemon server.js",
+    "build": "node api.js && echo 'Static files ready for deployment'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -21,9 +21,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "axios": "^1.11.0",
+    "canvas": "^3.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.3",
+    "form-data": "^4.0.4",
+    "instagram-private-api": "^1.46.1",
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
@@ -31,4 +37,4 @@
   "engines": {
     "node": ">=14.0.0"
   }
-} 
+}
