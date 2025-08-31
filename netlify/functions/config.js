@@ -24,7 +24,9 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
         SUPABASE_URL: process.env.SUPABASE_URL || '',
-        SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || ''
+        SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || '',
+        INSTA_APP_ID: process.env.INSTA_APP_ID || '',
+        INSTA_ACCESS_TOKEN: process.env.INSTA_ACCESS_TOKEN || ''
       })
     };
   }
