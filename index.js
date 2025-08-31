@@ -44,7 +44,7 @@ async function checkConfiguration() {
         statusElement.innerHTML += '<br><small>Please set the required environment variables in your .env file</small>';
         return false;
     } else {
-        statusElement.innerHTML = '<span style="color: #4CAF50;">✅ All configurations loaded</span>';
+        statusElement.innerHTML = '<span style="color: #4CAF50;">✅ working</span>';
         return true;
     }
 }
@@ -74,6 +74,8 @@ async function extractJobInfo() {
 3. Location
 4. Batch (graduation year)
 5. Apply Link (job application URL)
+6. Generate an engaging Instagram caption for a reel about this job opportunity
+7. Generate a WhatsApp message for sharing this job opportunity
 
 Message: "${message}"
 
@@ -83,7 +85,9 @@ Please respond with a JSON object containing these exact keys:
 "designation": "extracted job title",
 "location": "extracted location",
 "batch": "extracted batch/year",
-"apply_link": "extracted application URL"
+"apply_link": "extracted application URL",
+"instagram_caption": "An engaging Instagram caption for a reel about this job opportunity. Include relevant hashtags like #JobAlert #Hiring #CareerOpportunity #Jobs #Placement #TechJobs #Engineering #SoftwareDeveloper #Internship #Fresher #CompanyHiring. Make it catchy and professional, under 150 words.",
+"whatsapp_message": "A well-formatted WhatsApp message for sharing this job. Use emojis, proper spacing, and formatting. Structure: Company Name with emoji 🚀, Job Title, Location 📍, Batch 🎓, Apply Link 🔗. Make it engaging and copy-paste ready. Use WhatsApp-friendly formatting like *bold* for emphasis. The apply link should be formatted as 'jobopenings.cc/[ID_PLACEHOLDER]' - this will be replaced with actual ID later. Keep it concise but visually appealing with proper line breaks."
 }
 
 If any information is not found, use "Not specified" as the value.`;
@@ -144,7 +148,9 @@ function displayResults(data) {
         { key: 'designation', label: 'Designation' },
         { key: 'location', label: 'Location' },
         { key: 'batch', label: 'Batch' },
-        { key: 'apply_link', label: 'Apply Link' }
+        { key: 'apply_link', label: 'Apply Link' },
+        { key: 'instagram_caption', label: 'Instagram Caption' },
+        { key: 'whatsapp_message', label: 'WhatsApp Message' }
     ];
     
     fields.forEach(field => {
@@ -165,6 +171,103 @@ function displayResults(data) {
             link.target = '_blank';
             link.style.color = '#2196F3';
             value.appendChild(link);
+        } else if (field.key === 'instagram_caption') {
+            const captionContainer = document.createElement('div');
+            captionContainer.style.position = 'relative';
+            
+            const captionText = document.createElement('div');
+            captionText.style.whiteSpace = 'pre-wrap';
+            captionText.style.maxHeight = '200px';
+            captionText.style.overflowY = 'auto';
+            captionText.style.border = '1px solid #ddd';
+            captionText.style.padding = '10px';
+            captionText.style.borderRadius = '4px';
+            captionText.style.backgroundColor = '#f9f9f9';
+            captionText.textContent = data[field.key] || 'Not specified';
+            
+            if (data[field.key] && data[field.key] !== 'Not specified') {
+                const copyButton = document.createElement('button');
+                copyButton.textContent = '📋 Copy Caption';
+                copyButton.style.marginTop = '10px';
+                copyButton.style.padding = '5px 10px';
+                copyButton.style.border = 'none';
+                copyButton.style.borderRadius = '4px';
+                copyButton.style.backgroundColor = '#4CAF50';
+                copyButton.style.color = 'white';
+                copyButton.style.cursor = 'pointer';
+                copyButton.style.fontSize = '12px';
+                
+                copyButton.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(data[field.key]);
+                        copyButton.textContent = '✅ Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = '📋 Copy Caption';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                        copyButton.textContent = '❌ Copy Failed';
+                        setTimeout(() => {
+                            copyButton.textContent = '📋 Copy Caption';
+                        }, 2000);
+                    }
+                };
+                
+                captionContainer.appendChild(captionText);
+                captionContainer.appendChild(copyButton);
+                value.appendChild(captionContainer);
+            } else {
+                value.appendChild(captionText);
+            }
+        } else if (field.key === 'whatsapp_message') {
+            const whatsappContainer = document.createElement('div');
+            whatsappContainer.style.position = 'relative';
+            
+            const whatsappText = document.createElement('div');
+            whatsappText.style.whiteSpace = 'pre-wrap';
+            whatsappText.style.maxHeight = '200px';
+            whatsappText.style.overflowY = 'auto';
+            whatsappText.style.border = '1px solid #25D366';
+            whatsappText.style.padding = '10px';
+            whatsappText.style.borderRadius = '4px';
+            whatsappText.style.backgroundColor = '#f0fff4';
+            whatsappText.style.fontFamily = 'monospace';
+            whatsappText.textContent = data[field.key] || 'Not specified';
+            
+            if (data[field.key] && data[field.key] !== 'Not specified') {
+                const copyButton = document.createElement('button');
+                copyButton.textContent = '💬 Copy WhatsApp Message';
+                copyButton.style.marginTop = '10px';
+                copyButton.style.padding = '5px 10px';
+                copyButton.style.border = 'none';
+                copyButton.style.borderRadius = '4px';
+                copyButton.style.backgroundColor = '#25D366';
+                copyButton.style.color = 'white';
+                copyButton.style.cursor = 'pointer';
+                copyButton.style.fontSize = '12px';
+                
+                copyButton.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(data[field.key]);
+                        copyButton.textContent = '✅ Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = '💬 Copy WhatsApp Message';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                        copyButton.textContent = '❌ Copy Failed';
+                        setTimeout(() => {
+                            copyButton.textContent = '💬 Copy WhatsApp Message';
+                        }, 2000);
+                    }
+                };
+                
+                whatsappContainer.appendChild(whatsappText);
+                whatsappContainer.appendChild(copyButton);
+                value.appendChild(whatsappContainer);
+            } else {
+                value.appendChild(whatsappText);
+            }
         } else {
             value.textContent = data[field.key] || 'Not specified';
         }
@@ -200,6 +303,8 @@ async function insertToDatabase() {
             location: extractedJobData.location,
             batch: extractedJobData.batch,
             apply_link: extractedJobData.apply_link,
+            instagram_caption: extractedJobData.instagram_caption,
+            whatsapp_message: extractedJobData.whatsapp_message,
             created_at: new Date().toISOString()
         };
 
@@ -209,7 +314,7 @@ async function insertToDatabase() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${config.SUPABASE_SERVICE_KEY}`,
                 'apikey': config.SUPABASE_SERVICE_KEY,
-                'Prefer': 'return=minimal'
+                'Prefer': 'return=representation'
             },
             body: JSON.stringify(insertData)
         });
@@ -219,7 +324,71 @@ async function insertToDatabase() {
             throw new Error(`Database insertion failed: ${response.status} - ${errorData}`);
         }
 
+        const insertedData = await response.json();
+        const insertedId = insertedData[0].id;
+        
+        console.log('Inserted row ID:', insertedId);
+        
+        // Update the WhatsApp message with the actual ID
+        if (extractedJobData.whatsapp_message) {
+            extractedJobData.whatsapp_message_final = extractedJobData.whatsapp_message.replace(
+                /jobopenings\.cc\/\[ID_PLACEHOLDER\]/g,
+                `jobopenings.cc/${insertedId}`
+            );
+        }
+        
         showSuccess('Job information inserted successfully into database!');
+        
+        // Generate video after successful insertion
+        try {
+            showSuccess('Generating job alert video...');
+            
+            const videoResponse = await fetch('/api/generate-video', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: insertedId,
+                    company_name: extractedJobData.company_name,
+                    designation: extractedJobData.designation,
+                    location: extractedJobData.location,
+                    batch: extractedJobData.batch,
+                    apply_link: `jobopenings.cc/${insertedId}`,
+                    instagram_caption: extractedJobData.instagram_caption
+                })
+            });
+            
+            if (videoResponse.ok) {
+                const videoResult = await videoResponse.json();
+                console.log('Video URL:', videoResult.videoUrl);
+                
+                let message = `Job video generated successfully! Video URL: ${videoResult.videoUrl}`;
+                
+                if (videoResult.reelResult && videoResult.reelResult.success) {
+                    console.log('Reel uploaded successfully:', videoResult.reelResult);
+                    message += '\n✅ Instagram reel uploaded successfully!';
+                } else if (videoResult.reelError) {
+                    console.error('Reel upload failed:', videoResult.reelError);
+                    message += '\n⚠️ Instagram reel upload failed. Check console for details.';
+                } else {
+                    message += '\n⚠️ Instagram reel upload skipped (missing credentials or caption).';
+                }
+                
+                showSuccess(message);
+            } else {
+                console.error('Video generation failed:', await videoResponse.text());
+                showSuccess('Job inserted but video generation failed. Check console for details.');
+            }
+        } catch (videoError) {
+            console.error('Video generation error:', videoError);
+            showSuccess('Job inserted but video generation failed. Check console for details.');
+        }
+        
+        // Display final WhatsApp message with real ID
+        if (extractedJobData.whatsapp_message_final) {
+            displayFinalWhatsAppMessage(extractedJobData.whatsapp_message_final);
+        }
         
         // Clear the form after successful insertion
         setTimeout(() => {
@@ -253,6 +422,75 @@ function showError(message) {
 function hideMessages() {
     document.getElementById('successMessage').style.display = 'none';
     document.getElementById('errorMessage').style.display = 'none';
+}
+
+function displayFinalWhatsAppMessage(finalMessage) {
+    // Remove any existing final WhatsApp message container
+    const existingContainer = document.getElementById('finalWhatsAppContainer');
+    if (existingContainer) {
+        existingContainer.remove();
+    }
+    
+    // Create container for final WhatsApp message
+    const container = document.createElement('div');
+    container.id = 'finalWhatsAppContainer';
+    container.style.marginTop = '20px';
+    container.style.padding = '15px';
+    container.style.border = '2px solid #25D366';
+    container.style.borderRadius = '8px';
+    container.style.backgroundColor = '#f0fff4';
+    
+    const title = document.createElement('h4');
+    title.textContent = '💬 Final WhatsApp Message (Ready to Share)';
+    title.style.color = '#25D366';
+    title.style.marginBottom = '10px';
+    
+    const messageDisplay = document.createElement('div');
+    messageDisplay.style.whiteSpace = 'pre-wrap';
+    messageDisplay.style.fontFamily = 'monospace';
+    messageDisplay.style.backgroundColor = 'white';
+    messageDisplay.style.padding = '10px';
+    messageDisplay.style.border = '1px solid #ddd';
+    messageDisplay.style.borderRadius = '4px';
+    messageDisplay.style.marginBottom = '10px';
+    messageDisplay.textContent = finalMessage;
+    
+    const copyButton = document.createElement('button');
+    copyButton.textContent = '📱 Copy Final WhatsApp Message';
+    copyButton.style.padding = '8px 15px';
+    copyButton.style.border = 'none';
+    copyButton.style.borderRadius = '4px';
+    copyButton.style.backgroundColor = '#25D366';
+    copyButton.style.color = 'white';
+    copyButton.style.cursor = 'pointer';
+    copyButton.style.fontSize = '14px';
+    copyButton.style.fontWeight = 'bold';
+    
+    copyButton.onclick = async () => {
+        try {
+            await navigator.clipboard.writeText(finalMessage);
+            copyButton.textContent = '✅ Copied to Clipboard!';
+            copyButton.style.backgroundColor = '#4CAF50';
+            setTimeout(() => {
+                copyButton.textContent = '📱 Copy Final WhatsApp Message';
+                copyButton.style.backgroundColor = '#25D366';
+            }, 3000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            copyButton.textContent = '❌ Copy Failed';
+            setTimeout(() => {
+                copyButton.textContent = '📱 Copy Final WhatsApp Message';
+            }, 3000);
+        }
+    };
+    
+    container.appendChild(title);
+    container.appendChild(messageDisplay);
+    container.appendChild(copyButton);
+    
+    // Insert after the results section
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.parentNode.insertBefore(container, resultsSection.nextSibling);
 }
 
 // Initialize the application

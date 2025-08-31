@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const { generateJobAlertVideo } = require('./image');
+const InstagramReelsUploader = require('./reel');
 require('dotenv').config();
 
 const app = express();
@@ -23,6 +25,84 @@ app.get('/api/config', (req, res) => {
 // Serve the main HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Video generation endpoint
+app.post('/api/generate-video', async (req, res) => {
+    try {
+        const { id, company_name, designation, location, batch, apply_link, instagram_caption } = req.body;
+        
+        console.log(`Generating video for job ID: ${id}`);
+        console.log('Job details:', { company_name, designation, location, batch, apply_link });
+        
+        // Call the generateJobAlertVideo function
+        const videoResult = await generateJobAlertVideo(company_name, designation, location, batch, apply_link);
+        
+        console.log('Video generated successfully. Result:', videoResult);
+        
+        // Extract the download URL from the result
+        const videoDownloadUrl = videoResult.downloadUrl;
+        
+        if (!videoDownloadUrl) {
+            throw new Error('Video generation failed - no download URL available');
+        }
+        
+        // Upload reel to Instagram after video generation
+        if (process.env.INSTA_APP_ID && process.env.INSTA_ACCESS_TOKEN && instagram_caption) {
+            try {
+                console.log('Uploading reel to Instagram...');
+                console.log('Video URL for reel:', videoDownloadUrl);
+                console.log('Caption for reel:', instagram_caption);
+                
+                const uploader = new InstagramReelsUploader(
+                    process.env.INSTA_APP_ID,
+                    process.env.INSTA_ACCESS_TOKEN
+                );
+                
+                const reelResult = await uploader.uploadReel(videoDownloadUrl, instagram_caption);
+                
+                if (reelResult.success) {
+                    console.log('Reel uploaded successfully:', reelResult);
+                    res.json({
+                        success: true,
+                        videoUrl: videoDownloadUrl,
+                        reelResult: reelResult,
+                        message: 'Video generated and reel uploaded successfully'
+                    });
+                } else {
+                    console.error('Reel upload failed:', reelResult.error);
+                    res.json({
+                        success: true,
+                        videoUrl: videoDownloadUrl,
+                        reelError: reelResult.error,
+                        message: 'Video generated but reel upload failed'
+                    });
+                }
+            } catch (reelError) {
+                console.error('Reel upload error:', reelError);
+                res.json({
+                    success: true,
+                    videoUrl: videoDownloadUrl,
+                    reelError: reelError.message,
+                    message: 'Video generated but reel upload failed'
+                });
+            }
+        } else {
+            console.log('Instagram credentials or caption not available, skipping reel upload');
+            res.json({
+                success: true,
+                videoUrl: videoDownloadUrl,
+                message: 'Video generated successfully (reel upload skipped - missing credentials or caption)'
+            });
+        }
+        
+    } catch (error) {
+        console.error('Video generation error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to generate video'
+        });
+    }
 });
 
 // Health check endpoint
